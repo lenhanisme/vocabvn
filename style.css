@@ -1,33 +1,39 @@
+/* Thiết lập cơ bản */
+* { box-sizing: border-box; }
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f7f6;
     color: #333;
     margin: 0;
-    padding: 20px;
+    padding: 15px;
 }
 .container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     text-align: center;
 }
+header h1 { margin-bottom: 5px; color: #1a1a1a; }
+header p { color: #666; margin-bottom: 25px; }
+
+/* Form nhập liệu */
 .input-group {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
+    justify-content: center;
 }
 input[type="text"] {
-    flex: 1;
-    padding: 12px 20px;
+    width: 70%;
+    padding: 14px 20px;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     outline: none;
+    transition: 0.3s;
 }
-input[type="text"]:focus {
-    border-color: #007bff;
-}
+input[type="text"]:focus { border-color: #007bff; }
 button {
-    padding: 12px 24px;
+    padding: 14px 28px;
     background-color: #007bff;
     color: white;
     border: none;
@@ -35,19 +41,20 @@ button {
     font-size: 16px;
     cursor: pointer;
     font-weight: bold;
+    white-space: nowrap;
     transition: 0.3s;
 }
-button:hover {
-    background-color: #0056b3;
-}
-.hidden { display: none; }
-.error-msg { color: red; margin: 15px 0; font-weight: bold; }
-#loading { margin: 20px 0; font-style: italic; color: #555; }
+button:hover { background-color: #0056b3; }
 
-/* Grid cho thẻ từ vựng */
+/* Trạng thái */
+.hidden { display: none !important; }
+.error-msg { color: #dc3545; margin: 15px 0; font-weight: bold; }
+#loading { margin: 20px 0; font-style: italic; color: #555; display: flex; align-items: center; justify-content: center; gap: 10px;}
+
+/* Lưới thẻ từ vựng */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     text-align: left;
 }
@@ -55,10 +62,56 @@ button:hover {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-left: 5px solid #007bff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-top: 5px solid #007bff;
+    display: flex;
+    flex-direction: column;
 }
-.card h3 { margin: 0 0 5px 0; color: #007bff; font-size: 22px; text-transform: uppercase; }
-.card .ipa { color: #666; font-family: monospace; font-size: 16px; margin-bottom: 10px; }
-.card .meaning { font-weight: bold; font-size: 18px; margin-bottom: 15px; }
-.card .example { font-size: 14px; color: #444; background: #f9f9f9; padding: 10px; border-radius: 6px; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.card h3 { margin: 0; color: #007bff; font-size: 22px; text-transform: uppercase; }
+.card .ipa { color: #666; font-family: monospace; font-size: 15px; margin-bottom: 10px; }
+.card .meaning { font-weight: bold; font-size: 18px; margin-bottom: 15px; color: #222;}
+
+/* Badge Trình độ */
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+.badge.b1 { background-color: #28a745; } /* Xanh lá */
+.badge.b2 { background-color: #17a2b8; } /* Xanh lơ */
+.badge.c1 { background-color: #fd7e14; } /* Cam */
+.badge.c2 { background-color: #dc3545; } /* Đỏ */
+
+/* Thu gọn ví dụ dài */
+.card .example {
+    font-size: 14px;
+    color: #444;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: auto;
+}
+.example-text {
+    /* Hiển thị tối đa 4 dòng, phần thừa biến thành dấu ... */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+}
+
+/* RESPONSIVE CHO MOBILE */
+@media (max-width: 600px) {
+    .input-group {
+        flex-direction: column;
+    }
+    input[type="text"] { width: 100%; }
+    button { width: 100%; }
+    .grid-container {
+        grid-template-columns: 1fr; /* 1 cột trên điện thoại */
+    }
+}
