@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Web Get Từ Vựng IELTS Từ Các Bài Báo | VOCAB.VN</title>
+    <title>Tool Scrape Từ Vựng IELTS</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🚀 IELTS Vocab Scraper</h1>
-        <p>Dán link bài báo tiếng Anh vào đây để cào từ vựng tự động</p>
+        <header>
+            <h1>🚀 IELTS Vocab Scraper</h1>
+            <p>Dán link bài báo tiếng Anh vào đây để cào từ vựng tự động</p>
+        </header>
         
         <div class="input-group">
             <input type="text" id="urlInput" placeholder="https://www.bbc.com/news/...">
@@ -17,7 +19,7 @@
         </div>
 
         <div id="loading" class="hidden">
-            ⏳ Đang cào dữ liệu và dịch thuật (Có thể mất 5-10 giây)...
+            <div class="spinner"></div> Đang cào và phân tích cấp độ từ vựng...
         </div>
 
         <div id="error" class="hidden error-msg"></div>
