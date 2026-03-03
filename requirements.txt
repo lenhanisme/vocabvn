@@ -1,0 +1,6 @@
+Flask==3.0.0
+flask-cors==4.0.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+eng-to-ipa==0.0.2
+deep-translator==1.11.4
