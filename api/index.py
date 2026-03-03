@@ -10,9 +10,22 @@ from deep_translator import GoogleTranslator
 app = Flask(__name__)
 CORS(app)
 
+def estimate_level(word):
+    """Đánh giá trình độ CEFR và IELTS Band dựa trên cấu trúc từ"""
+    length = len(word)
+    # Các đuôi từ thường gặp ở trình độ cao
+    c1_c2_suffixes = ('tion', 'ment', 'ence', 'ance', 'ility', 'ology', 'esque', 'cious')
+    
+    if length >= 10 or word.endswith(c1_c2_suffixes):
+        return {"level": "C1", "band": "7.0+"}
+    elif length >= 8:
+        return {"level": "B2", "band": "6.0-6.5"}
+    else:
+        return {"level": "B1", "band": "5.0-5.5"}
+
 def get_article_data(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-    response = requests.get(url, headers=headers, timeout=5)
+    response = requests.get(url, headers=headers, timeout=8)
     response.raise_for_status() 
     soup = BeautifulSoup(response.text, 'html.parser')
     paragraphs = soup.find_all('p')
@@ -25,16 +38,18 @@ def extract_words(text):
     common_words = {
         'because', 'through', 'between', 'another', 'without', 'however', 
         'against', 'during', 'before', 'number', 'people', 'should', 'would',
-        'could', 'about', 'which', 'their', 'there', 'those', 'these', 'always'
+        'could', 'about', 'which', 'their', 'there', 'those', 'these', 'always', 'already'
     }
     good_words = [w for w in words if len(w) >= 7 and w not in common_words]
-    # Lấy top 10 từ để đảm bảo không bị quá giới hạn thời gian chạy 10s của Vercel
-    return Counter(good_words).most_common(10)
+    return Counter(good_words).most_common(12) # Lấy 12 từ cho đẹp UI (chia hết cho 1, 2, 3 cột)
 
 def find_example(word, sentences):
     for sentence in sentences:
         if re.search(r'\b' + re.escape(word) + r'\b', sentence.lower()):
-            return sentence.replace('\n', ' ').strip()
+            # Loại bỏ khoảng trắng thừa
+            clean_sentence = sentence.replace('\n', ' ').strip()
+            # Nếu câu quá dài thì ngắt bớt ở Backend luôn cho nhẹ dữ liệu
+            return clean_sentence if len(clean_sentence) <= 250 else clean_sentence[:250] + "..."
     return ""
 
 @app.route('/', defaults={'path': ''})
@@ -66,13 +81,16 @@ def scrape_vocab():
                 meaning = "Lỗi dịch thuật"
                 
             example_sen = find_example(word, sentences)
+            word_stats = estimate_level(word)
             
             result_data.append({
                 "word": word,
                 "ipa": f"/{phonetic}/",
                 "meaning": meaning,
                 "frequency": freq,
-                "example": example_sen
+                "example": example_sen,
+                "level": word_stats["level"],
+                "band": word_stats["band"]
             })
 
         return jsonify({'vocab': result_data}), 200
