@@ -11,11 +11,9 @@ app = Flask(__name__)
 CORS(app)
 
 def estimate_level(word):
-    """Đánh giá trình độ CEFR và IELTS Band dựa trên cấu trúc từ"""
+    """Đánh giá trình độ CEFR và IELTS Band"""
     length = len(word)
-    # Các đuôi từ thường gặp ở trình độ cao
     c1_c2_suffixes = ('tion', 'ment', 'ence', 'ance', 'ility', 'ology', 'esque', 'cious')
-    
     if length >= 10 or word.endswith(c1_c2_suffixes):
         return {"level": "C1", "band": "7.0+"}
     elif length >= 8:
@@ -28,9 +26,27 @@ def get_article_data(url):
     response = requests.get(url, headers=headers, timeout=8)
     response.raise_for_status() 
     soup = BeautifulSoup(response.text, 'html.parser')
+    
     paragraphs = soup.find_all('p')
-    full_text = ' '.join([p.get_text() for p in paragraphs])
-    sentences = re.split(r'(?<=[.!?]) +', full_text)
+    sentences = []
+    full_text_parts = []
+    
+    for p in paragraphs:
+        # Lấy text, dọn dẹp các ký tự xuống dòng và khoảng trắng thừa
+        text = p.get_text().replace('\n', ' ').replace('\r', '').strip()
+        text = re.sub(r'\s+', ' ', text)
+        if not text: continue
+            
+        full_text_parts.append(text)
+        
+        # THUẬT TOÁN TÁCH CÂU MỚI: Tách tại dấu . ! ? đi kèm khoảng trắng và chữ hoa
+        # Giúp lấy được từng câu ngắn gọn, độc lập
+        raw_sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z0-9])', text)
+        for s in raw_sentences:
+            if len(s) > 15: # Chỉ lấy các câu có độ dài hợp lý, bỏ qua rác
+                sentences.append(s.strip())
+
+    full_text = ' '.join(full_text_parts)
     return full_text, sentences
 
 def extract_words(text):
@@ -41,16 +57,15 @@ def extract_words(text):
         'could', 'about', 'which', 'their', 'there', 'those', 'these', 'always', 'already'
     }
     good_words = [w for w in words if len(w) >= 7 and w not in common_words]
-    return Counter(good_words).most_common(12) # Lấy 12 từ cho đẹp UI (chia hết cho 1, 2, 3 cột)
+    return Counter(good_words).most_common(12)
 
 def find_example(word, sentences):
     for sentence in sentences:
+        # Tìm câu DUY NHẤT chứa từ vựng đó
         if re.search(r'\b' + re.escape(word) + r'\b', sentence.lower()):
-            # Loại bỏ khoảng trắng thừa
-            clean_sentence = sentence.replace('\n', ' ').strip()
-            # Nếu câu quá dài thì ngắt bớt ở Backend luôn cho nhẹ dữ liệu
-            return clean_sentence if len(clean_sentence) <= 250 else clean_sentence[:250] + "..."
-    return ""
+            # Nếu câu vẫn hơi dài thì giới hạn lại khoảng 200 ký tự
+            return sentence if len(sentence) <= 200 else sentence[:200] + "..."
+    return "Không tìm thấy câu ví dụ phù hợp."
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -62,8 +77,7 @@ def scrape_vocab():
     try:
         data = request.get_json()
         url = data.get('url')
-        if not url:
-            return jsonify({'error': 'Vui lòng cung cấp URL'}), 400
+        if not url: return jsonify({'error': 'Vui lòng cung cấp URL'}), 400
 
         full_text, sentences = get_article_data(url)
         top_vocab = extract_words(full_text)
