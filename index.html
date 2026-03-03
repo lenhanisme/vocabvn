@@ -3,30 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Scrape Từ Vựng IELTS</title>
+    <title>IELTS Vocab Scraper Pro</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🚀 IELTS Vocab Scraper</h1>
-            <p>Dán link bài báo tiếng Anh vào đây để cào từ vựng tự động</p>
-        </header>
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-rocket"></i> Vocab Scraper <span>Pro</span>
+            </div>
+            <div class="nav-links">
+                <a href="https://vnschool.vercel.app/" target="_blank"><i class="fa-solid fa-book"></i> Kho Tài Liệu</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="hero-section">
+            <h1>Nâng Tầm Vốn Từ Vựng Của Bạn</h1>
+            <p>Dán link bài báo tiếng Anh vào đây để hệ thống tự động cào và phân tích từ vựng học thuật chuẩn CEFR & IELTS.</p>
+        </div>
         
         <div class="input-group">
-            <input type="text" id="urlInput" placeholder="https://www.bbc.com/news/...">
-            <button id="scrapeBtn" onclick="scrapeData()">Phân Tích</button>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-link"></i>
+                <input type="text" id="urlInput" placeholder="Nhập link bài báo (VD: https://edition.cnn.com/...)">
+            </div>
+            <button id="scrapeBtn" onclick="scrapeData()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Phân Tích
+            </button>
         </div>
 
         <div id="loading" class="hidden">
-            <div class="spinner"></div> Đang cào và phân tích cấp độ từ vựng...
+            <div class="spinner"></div> <span>Đang cào và phân tích cấp độ từ vựng...</span>
         </div>
 
         <div id="error" class="hidden error-msg"></div>
 
         <div id="result" class="grid-container">
             </div>
-    </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Copyright by <a href="https://t.me/tolabimat" target="_blank">@vnsoftware</a>.</p>
+            <p>Liên hệ hỗ trợ: <a href="mailto:lenhancute1@gmail.com">lenhancute1@gmail.com</a></p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
