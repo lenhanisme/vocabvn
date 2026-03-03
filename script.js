@@ -10,13 +10,11 @@ async function scrapeData() {
         return;
     }
 
-    // Reset giao diện
     errorDiv.classList.add('hidden');
     resultDiv.innerHTML = '';
     loading.classList.remove('hidden');
 
     try {
-        // Gọi API backend của chính trang web
         const response = await fetch('/api/scrape', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -25,23 +23,28 @@ async function scrapeData() {
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Lỗi hệ thống khi cào dữ liệu.');
-        }
+        if (!response.ok) throw new Error(data.error || 'Lỗi hệ thống khi cào dữ liệu.');
 
         if (data.vocab.length === 0) {
-            errorDiv.textContent = 'Không tìm thấy từ vựng nào phù hợp.';
+            errorDiv.textContent = 'Không tìm thấy từ vựng học thuật nào phù hợp.';
             errorDiv.classList.remove('hidden');
         } else {
-            // Render từng từ vựng ra giao diện
             data.vocab.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <h3>${item.word}</h3>
-                    <div class="ipa">${item.ipa} <span>(lặp lại ${item.frequency} lần)</span></div>
+                    <div class="card-header">
+                        <h3>${item.word}</h3>
+                        <span class="badge ${item.level.toLowerCase()}" title="IELTS ${item.band}">
+                            ${item.level} | ${item.band}
+                        </span>
+                    </div>
+                    <div class="ipa">${item.ipa}</div>
                     <div class="meaning">${item.meaning}</div>
-                    <div class="example"><strong>Ví dụ:</strong> <i>"${item.example}"</i></div>
+                    <div class="example">
+                        <strong>Ví dụ:</strong>
+                        <div class="example-text">"${item.example}"</div>
+                    </div>
                 `;
                 resultDiv.appendChild(card);
             });
